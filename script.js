@@ -41,5 +41,61 @@ function insertItem(item, index) {
             <button onclick="deleteItem(${index})"><i class='bx bx-trash'></i></button>
         </td>
     `
-    tbody.appendChild(tr)
+    tbody.appendChild(tr) // cada item que é carregado nessa função(insertItem) é carregado no body
+}
+
+function editItem(index) {
+
+    openModal(true, index)
+}
+
+function deleteItem(index) {
+    itens.splice(index, 1) // splice(altera o conteudo de uma lista, add novos enquanto remove antigos) do index removendo 1 item
+    setItensBD() // atualiza bd
+    loadItens() // carrega bd na tela
+}
+
+function openModal(edit = false, index = 0) {
+    modal.classList.add('active')
+
+    modal.onclick = e => {
+        if(e.target.className.indexOf('modal-container') != -1) {
+            modal.classList.remove('active')
+        }
+    }
+
+    if(edit) { // se for edição vai aparecer os dados 
+        sNome.value = itens[index].nome
+        sFuncao.value = itens[index].funcao
+        sSalario.value = itens[index].salario
+        id = index
+    } else { // se n for, n vai aparecer nada nos dados
+        sNome.value = ''
+        sFuncao.value = ''
+        sSalario.value = ''
+    }
+}
+
+btnSalvar.onclick = e => {
+
+    if(sNome.value === '' || sFuncao.value === '' || sSalario.value === '') {
+        return
+    }
+
+    e.preventDefault()
+
+    if(id != undefined) { // se vim de uma edição ele vai atualizar a array com os valores so daquele id
+        itens[id].nome = sNome.value
+        itens[id].funcao = sFuncao.value
+        itens[id].salario = sSalario.value
+    } else { // push incluindo um novo item no banco
+        itens.push({'nome': sNome.value, 'funcao': sFuncao.value, 'salario': sSalario.value})
+    }
+
+    setItensBD()
+
+    modal.classList.remove('active')
+    loadItens()
+    id = undefined
+
 }
